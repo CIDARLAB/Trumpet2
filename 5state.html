@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>5 State Recombinase Circuit Designer</title>
+<style>
+.gene {
+	border: 1px solid grey;
+	width: 50px;
+	height: 50px;
+	margin:auto;
+	visibility: hidden;
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+	align-content: center;
+	text-align: center;
+	margin-top: 5px;
+}
+.nodebox {
+	border: 1px solid gray;
+	width: 200px;
+	height: 150px;
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+	text-align:center;
+	text-emphasis:circle;
+	font-size:16px;
+}
+.active {
+	background: #BBCDF5;
+}
+.disabled {
+	background: #9A9A9A;
+}
+.sidepanel{
+	border: 1px solid gray;
+	width: 80px;
+	height: auto;
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+	float: left;
+}
+.circle {
+	width: 100px;
+	height: 100px;
+	background: red;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+}
+table, tr, th, td{ 
+	margin-left: auto;
+	margin-right: auto;
+	border-collapse: collapse;
+	padding: 10px;
+}
+.arrow{
+  position: relative;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-right: 20px solid;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  
+}
+.arrow:after{
+  content: "";
+  position: absolute;
+  border: 0 solid transparent;
+  border-top: 3px solid;
+  top: -30px;
+  left: -40px;
+  width: 40px;
+  height: 60px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+}
+.red{
+	border-right: 20px solid red;
+}
+.red:after{
+	border-top: 3px solid red;
+}
+.blue{
+	border-right: 20px solid blue;
+}
+.blue:after{
+	border-top: 3px solid blue;
+}
+.button{
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+}
+#content{
+	margin-left: 85px;
+	white-space: nowrap;
+}
+.outputField{
+	border: 1px solid gray;
+	width: 600px;
+	height: 150px;
+	align-self: center;
+	-webkit-align-self: center;
+	margin: auto;
+	text-align:center;
+	text-emphasis:circle;
+	font-size:16px;
+}
+
+</style>
+</head>
+
+<body>
+<div id="mainDiv"  ondragover="allowDrop(event)" ondrop="drop(event)">
+<div>Ignore Nodes (allow any output): 
+	<input class="toggle" name="ignoreA" type="checkbox" id="ignoreA" value="ignoreA" onClick="toggleIgnore(this,'nodeA')"/>1  
+    <input class="toggle" name="ignoreB" type="checkbox" id="ignoreB" value="ignoreB" onClick="toggleIgnore(this,'nodeB')"/>2  
+    <input class="toggle" name="ignoreC" type="checkbox" id="ignoreC" value="ignoreC" onClick="toggleIgnore(this,'nodeC')"/>3  
+    <input class="toggle" name="ignoreD" type="checkbox" id="ignoreD" value="ignoreD" onClick="toggleIgnore(this,'nodeD')"/>4  
+    <input class="toggle" name="ignoreE" type="checkbox" id="ignoreE" value="ignoreE" onClick="toggleIgnore(this,'nodeE')"/>5
+</div>
+
+<aside id="partspanel" class="sidepanel"  ondragover="allowDrop(event)" ondrop="drop(event)">
+  	<button name="showGeneButton" id="showGeneButton" onClick="showGene()"><strong>+</strong></button>
+    <button name="showGeneButton" id="showGeneButton" onClick="hideGene()"><b>-</b></button>
+    <div class="gene" id="geneA" style="visibility:visible;background:#CC3333" draggable="true" ondragstart="drag(event)">A</div>
+    <div class="gene" id="geneB" style="visibility:visible;background:#00CC00" draggable="true" ondragstart="drag(event)">B</div>
+	<div class="gene" id="geneC" style="visibility:visible;background:#6666FF" draggable="true" ondragstart="drag(event)">C</div>
+	<div class="gene" id="geneD" style="visibility:visible;background:#CC00CC" draggable="true" ondragstart="drag(event)">D</div>
+    <div class="gene" id="geneE" style="visibility:visible;background:#00CCCC" draggable="true" ondragstart="drag(event)">E</div>
+    <div class="gene" id="geneF" style="visibility:hidden;background:#CCCC00" draggable="true" ondragstart="drag(event)">F</div>
+    <div class="gene" id="geneG" style="visibility:hidden;background:#33CCAA" draggable="true" ondragstart="drag(event)">G</div>
+    <div class="gene" id="geneH" style="visibility:hidden;background:#33CC33" draggable="true" ondragstart="drag(event)">H</div>
+    <div class="gene" id="geneI" style="visibility:hidden;background:#FFCC66" draggable="true" ondragstart="drag(event)">I</div>
+    <div class="gene" id="geneJ" style="visibility:hidden;background:#CC99FF" draggable="true" ondragstart="drag(event)">J</div>
+    <div class="gene" id="geneK" style="visibility:hidden;background:#99FFCC" draggable="true" ondragstart="drag(event)">K</div>
+    <div class="gene" id="geneL" style="visibility:hidden;background:#FF99CC" draggable="true" ondragstart="drag(event)">L</div>
+  </aside>
+
+<section id="content">
+ 	<table>
+    	<tr>
+        	<td>&nbsp;</td>
+        	<td><div class="nodebox active" id="nodeA" ondragover="allowDrop(event)" ondrop="drop(event)">1</div></td>
+        	<td>&nbsp;</td>
+    	</tr>
+    	<tr>
+    	  <td align="right">
+          <div class="arrow red" style="-webkit-transform: rotate(90deg); -moz-transform: rotate(90deg); -ms-transform: rotate(90deg); -o-transform: rotate(90deg)"></div></td>
+    	  <td>&nbsp;</td>
+    	  <td align="left"><div class="arrow blue" style="-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-o-transform: rotate(0deg);"></div></td>
+      </tr>
+    	<tr>
+    	  <td><div class="nodebox active" id="nodeB"  ondragover="allowDrop(event)" ondrop="drop(event)">2</div></td>
+    	  <td>&nbsp;</td>
+    	  <td><div class="nodebox active" id="nodeC"  ondragover="allowDrop(event)" ondrop="drop(event)">3</div></td>
+      </tr>
+    	<tr>
+    	  <td align="center"><div class="arrow blue"></div></td>
+    	  <td>&nbsp;</td>
+    	  <td align="center"><div class="arrow red"></div></td>
+      </tr>
+    	<tr>
+    	  <td><div class="nodebox active" id="nodeD"  ondragover="allowDrop(event)" ondrop="drop(event)">4</div></td>
+    	  <td>&nbsp;</td>
+    	  <td><div class="nodebox active" id="nodeE"  ondragover="allowDrop(event)" ondrop="drop(event)">5</div></td>
+      </tr>
+    </table>
+     <button id="resetButton" onClick="resetNodes()">Reset</button>
+<button id="submitButton" onClick="submit()">Submit</button>
+<div id="out" class="outputField"/>
+
+</section>
+</div>
+<script type="text/javascript">
+function toggleignore(checkbox, target){
+	
+}
+var colors = ["#CC0000", "#00CC00", "#0000CC", "#CC00CC", "#00CCCC", "#CCCC00", "#33CCFF", "#33CC33", "#FFCC66", "#CC99FF"];
+var visibleGenesDefault = 5;
+var visibleGenes = visibleGenesDefault;
+function showGene(){
+		var panel = document.getElementById("partspanel");
+		var children = panel.getElementsByClassName("gene");
+		if (visibleGenes < 12){
+			var gene = children[visibleGenes]
+			gene.style.visibility="visible";
+			visibleGenes += 1;
+		}
+}
+function hideGene(){
+		var panel = document.getElementById("partspanel");
+		var children = panel.getElementsByClassName("gene");
+		if (visibleGenes > 0){
+			var nodes = document.getElementsByClassName("nodebox");
+			for (var i = 0; i < nodes.length; i++){
+				removeGene(children.item(visibleGenes).id, nodes.item(i).id);
+			}
+			children.item(visibleGenes).style.visibility="hidden";
+			visibleGenes -= 1;
+		}	
+}
+function addGene(geneID, nodeID){
+	var node = document.getElementById(nodeID);
+	var ids = [];
+	var children = node.getElementsByClassName("gene");
+	//only add to active nodeboxes
+	for (var i = 0; i < children.length; i++){
+		ids.push(children.item(i).id);	
+	}
+	if (!contains(ids,geneID)){
+		node.appendChild(document.getElementById(geneID).cloneNode(true));
+		sortGenes(nodeID);
+	}
+}
+//remove a gene from a node. Inputs are the IDs as Strings
+function removeGene(gene, node){
+	var originNode = document.getElementById(node);
+	var children = originNode.getElementsByClassName("gene");
+	for (var i = 0; i < children.length; i++){
+		//alert(children.item(i).id);
+		if (children.item(i).id == gene){
+			target = children.item(i);
+			originNode.removeChild(target);
+			return target;	
+		}
+	}
+}
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+	ev.dataTransfer.setData("origin", ev.target.parentNode.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+	var data = ev.dataTransfer.getData("text");
+	if (contains(document.getElementsByClassName("active"),ev.target)){
+		addGene(data, ev.target.id);
+		//delete the node from the origin if it wasn't dragged out of the parts panel
+	}
+	var origin = ev.dataTransfer.getData("origin");
+	if (origin != "partspanel"){
+		removeGene(data,origin);
+	}
+}
+
+function sortGenes(nodeID){
+	var node = document.getElementById(nodeID);
+	var ids = [];
+	var children = node.getElementsByClassName("gene");
+	for (var i = 0; i < children.length; i++){
+		ids.push(children.item(i).id);	
+	}
+	ids.sort();
+	/*while(node.hasChildNodes()){
+		node.removeChild(node.firstChild);	
+	}*/
+	for (var i = 0; i < ids.length; i++){
+		var id = ids[i];
+		gene = removeGene(id, nodeID);
+		node.appendChild(gene);	
+	}
+}
+
+function resetNodes(){
+	var nodes = document.getElementsByClassName("nodebox");
+	var genes = document.getElementsByClassName("gene");
+	for (var i = 0; i < nodes.length; i++){
+		for (var j = 0; j < genes.length; j++){
+			removeGene(genes.item(j).id,nodes.item(i).id)
+		}
+		activateNode(nodes.item(i).id);
+	}
+	while (visibleGenes >= visibleGenesDefault){
+		hideGene();
+	}
+	while (visibleGenes < visibleGenesDefault){
+		showGene();
+	}
+	var checkboxes = document.getElementsByTagName("toggle");
+	for (var i = 0; i < checkboxes.length; i++){
+		checkboxes.item(i).checked = false;	
+	}
+}
+
+//used to check arrays for ID strings
+function contains(a, obj) {
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function disableNode(nodeID){
+	var node = document.getElementById(nodeID);
+	var children = node.getElementsByClassName("gene");
+	//for (var i = 0; i < children.length; i++){
+		//removeGene(children.item(i).id,nodeID);
+	//}
+	while(node.getElementsByClassName("gene").length > 0){
+		removeGene(children.item(0).id, nodeID);
+	}
+	node.className = "nodebox disabled";
+}
+
+function activateNode(nodeID){
+	var node = document.getElementById(nodeID);
+	node.className = "nodebox active";
+}
+
+function toggleIgnore(checkbox, nodeID){
+	if (checkbox.checked){
+		disableNode(nodeID);
+	}
+	else {
+		activateNode(nodeID);
+	}
+}
+function submit(){
+	var out = document.getElementById("out");
+	var text = document.createTextNode("5 -17 4 3 9 12");
+	
+	out.appendChild(text);
+}
+</script>
+</body>
+
+
+</html>
